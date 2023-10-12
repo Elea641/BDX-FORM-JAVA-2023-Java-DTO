@@ -19,10 +19,11 @@ public class Pokemon {
     @JoinColumn(name = "trainer_id")
     private Trainer trainer;
 
-    public Pokemon(String name, int power, String attribute) {
+    public Pokemon(String name, int power, String attribute, Trainer trainer) {
         this.name = name;
         this.power = power;
         this.attribute = attribute;
+        this.trainer = trainer;
     }
 
     public Pokemon() {
@@ -59,5 +60,13 @@ public class Pokemon {
 
     public void setAttribute(String attribute) {
         this.attribute = attribute;
+    }
+
+    public Trainer getTrainer() {
+        return trainer;
+    }
+
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
     }
 }

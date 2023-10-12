@@ -2,6 +2,7 @@ package com.example.DTO.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,7 +19,7 @@ public class Trainer {
     private int level;
 
     @OneToMany(mappedBy = "trainer")
-    private List<Pokemon> pokemons;
+    private List<Pokemon> pokemons = new ArrayList<>();
 
     public Trainer(String name, int age, int level, List<Pokemon> pokemons) {
         this.name = name;
