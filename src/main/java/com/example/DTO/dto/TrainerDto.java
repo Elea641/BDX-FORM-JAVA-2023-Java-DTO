@@ -6,7 +6,7 @@ import java.util.List;
 
 public class TrainerDto {
     private String name;
-    private List<Pokemon> pokemons;
+    private List<PokemonDto> pokemonDtos;
 
     public String getName() {
         return name;
@@ -16,11 +16,11 @@ public class TrainerDto {
         this.name = name;
     }
 
-    public List<Pokemon> getPokemons() {
-        return pokemons;
+    public List<PokemonDto> getPokemonDtos() {
+        return pokemonDtos;
     }
 
-    public void setPokemons(List<Pokemon> pokemons) {
-        this.pokemons = pokemons;
+    public void setPokemonDtos(List<PokemonDto> pokemonDtos) {
+        this.pokemonDtos = pokemonDtos;
     }
 }

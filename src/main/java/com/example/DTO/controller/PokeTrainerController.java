@@ -8,10 +8,11 @@ import com.example.DTO.repository.PokemonRepository;
 import com.example.DTO.repository.TrainerRepository;
 import com.example.DTO.service.PokemonMapper;
 import com.example.DTO.service.TrainerMapper;
-import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +57,20 @@ public class PokeTrainerController {
 
         if (optionalTrainer.isPresent()) {
             Trainer trainer = optionalTrainer.get();
+
+            // Récupérer la liste des Pokémon associés au dresseur
+            List<Pokemon> trainerPokemons = trainer.getPokemons();
+
+            List<PokemonDto> pokemonDtos = new ArrayList<>();
+
+            for (Pokemon pokemon : trainerPokemons) {
+                PokemonDto pokemonDto = pokemonMapper.TransformPokemonEntityInPokemonDto(pokemon);
+                pokemonDtos.add(pokemonDto);
+            }
+
             TrainerDto trainerDto = trainerMapper.TransformTrainerEntityInTrainerDto(trainer);
+            trainerDto.setPokemonDtos(pokemonDtos);
+
             return ResponseEntity.ok(trainerDto);
         } else {
             return ResponseEntity.notFound().build();
@@ -78,31 +92,29 @@ public class PokeTrainerController {
         return trainerRepository.save(trainer);
     }
 
-    @Transactional
     @PutMapping("/trainers/{trainerId}/addPokemon/{pokemonId}")
     public ResponseEntity<?> addPokemonToTrainer(@PathVariable Long trainerId, @PathVariable Long pokemonId) {
-        Optional<Trainer> optionalTrainer = trainerRepository.findById(trainerId);
-        Optional<Pokemon> optionalPokemon = pokemonRepository.findById(pokemonId);
+        Optional<Pokemon> pokemonOptional = pokemonRepository.findById(pokemonId);
 
-        if (optionalTrainer.isPresent() && optionalPokemon.isPresent()) {
-            Trainer trainer = optionalTrainer.get();
-            Pokemon pokemon = optionalPokemon.get();
+        if (pokemonOptional.isPresent()) {
+            Pokemon pokemon = pokemonOptional.get();
 
+            // Vérifier si le Pokémon a déjà un dresseur
             if (pokemon.getTrainer() == null) {
-                List<Pokemon> pokemons = trainer.getPokemons();
-                if (!pokemons.contains(pokemon)) {
-                    pokemons.add(pokemon);
-                    trainer.setPokemons(pokemons);
-                    trainerRepository.save(trainer);
-                    return ResponseEntity.ok("Le Pokémon a été ajouté à la liste de l'entraîneur.");
+                // Mettre à jour le trainer_id
+                Trainer trainer = trainerRepository.findById(trainerId).orElse(null);
+                if (trainer != null) {
+                    pokemon.setTrainer(trainer);
+                    pokemonRepository.save(pokemon);
+                    return ResponseEntity.ok("Le Pokémon a été ajouté au dresseur.");
                 } else {
-                    return ResponseEntity.badRequest().body("Le Pokémon est déjà dans la liste de l'entraîneur.");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dresseur non trouvé.");
                 }
             } else {
-                return ResponseEntity.badRequest().body("Le Pokémon appartient déjà à un autre entraîneur.");
+                return ResponseEntity.badRequest().body("Le Pokémon a déjà un dresseur attribué.");
             }
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pokémon non trouvé.");
         }
     }
 }
