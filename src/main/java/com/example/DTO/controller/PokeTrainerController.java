@@ -26,7 +26,7 @@ public class PokeTrainerController {
 
     private final TrainerMapper trainerMapper;
 
-    public PokeTrainerController(PokemonRepository pokemonRepository, TrainerRepository trainerRepository, PokemonDto pokemonDto, PokemonMapper pokemonMapper, TrainerMapper trainerMapper) {
+    public PokeTrainerController(PokemonRepository pokemonRepository, TrainerRepository trainerRepository, PokemonMapper pokemonMapper, TrainerMapper trainerMapper) {
         this.pokemonRepository = pokemonRepository;
         this.trainerRepository = trainerRepository;
         this.pokemonMapper = pokemonMapper;

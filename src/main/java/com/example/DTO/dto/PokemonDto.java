@@ -1,12 +1,8 @@
 package com.example.DTO.dto;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class PokemonDto {
     private String name;
     private String attribute;
-
     private Long Id;
 
     public String getName() {
